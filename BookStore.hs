@@ -1,4 +1,11 @@
 -- file: ch03/BookStore.hs
+-- Every expression and function in Haskell has a type -- HS type system is a MAJOR +
+-- STRONG - will not coerce/cast one type to another
+-- STATIC - compiler knows the type of every value and expression at compile time (as opposed to python duck typing)
+-- INFERRED - compiler can auto-detect type for us (we can also optionally explicitly declare it)
+
+
+-- BookInfo is type constructor, while Book is value constructor
 data BookInfo = Book Int String [String]
                 deriving (Show)
 
