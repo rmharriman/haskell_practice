@@ -52,18 +52,30 @@ data BillingInfo = CreditCard CardNumber CardHolder Address
                    | Invoice CustomerID
                    deriving (Show)
 
+-- Underscore acts as a wild card in pattern matching (accessor function example)
+-- Writing your own accessor functions can be tedious
+nicerID (Book id _  _) = id
+nicerTitle (Book _ title _ ) = title
+nicerAuthor (Book _ _ author) = author
+
+
 -- Better way to define a datatype. Accessor functions are provided for you.
--- Haskell calls it record syntax
+-- Haskell calls it record syntax (use curly brackets)
 data Customer = Customer {
       customerID      :: CustomerID,
       customerName    :: String,
       customerAddress :: Address
     } deriving (Show)
 
+-- No need to write the accessor function: customerID (Customer id _ _) = id
+-- Output of :type customerID is already what we need: customerID :: Customer -> CustomerID
+
+-- Usual application syntax to create a value of this type
 customer1 = Customer 1005 "J.R. Hacker"
             ["255 Syntax Ct",
              "Milpitas, CA 95134",
              "USA"]
+
 customer2 = Customer 45454 "Rob" ["where i live", "USA"]
 
 -- Record syntax can also be used to create records too
