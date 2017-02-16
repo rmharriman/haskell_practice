@@ -5,14 +5,18 @@
 -- INFERRED - compiler can auto-detect type for us (we can also optionally explicitly declare it)
 
 
--- BookInfo is type constructor, while Book is value constructor
+-- BookInfo is type constructor (name of our new type), while Book is value constructor (must start w/ a capital)
+-- Use the Book value constructor to create a value of type BookInfo
+-- Components follow the value constructor (fields in other languages) - a slot to keep a value
 data BookInfo = Book Int String [String]
                 deriving (Show)
 
+-- Create new values of type BookInfo by using the Book value constructor as a function
+-- Book is a function that creates and returns a new value of type BookInfo
 myInfo = Book 978013507 "Alegebra of Programming" ["Richard Bird", "Oege de Moor"]
 
 
--- type synonyms
+-- type synonyms (purely for making code more readable)
 type CustomerID = Int
 type ReviewBody = String
 
@@ -26,6 +30,21 @@ type BookRecord = (BookInfo, BookReview)
 type CardHolder = String
 type CardNumber = String
 type Address = [String]
+
+
+-- algebraic data types group related values together to form a compound value. ex:
+data Cartesian2D = Cartesian2d Double Double
+                   deriving (Eq, Show)
+
+-- Can also be an enumeration type (range of possible values)
+data Roygbiv = Red
+             | Orange
+             | Yellow
+             | Green
+             | Blue
+             | Indigo
+             | Violet
+               deriving (Eq, Show)
 
 -- Example of multiple value constructors (VC) - everything after value constructor are arguments to the VC
 data BillingInfo = CreditCard CardNumber CardHolder Address
