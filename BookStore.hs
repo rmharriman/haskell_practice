@@ -69,6 +69,8 @@ data Customer = Customer {
 
 -- No need to write the accessor function: customerID (Customer id _ _) = id
 -- Output of :type customerID is already what we need: customerID :: Customer -> CustomerID
+-- Read as create function customerID which takes an argument of type Customer and returns a CustomerID type
+
 
 -- Usual application syntax to create a value of this type
 customer1 = Customer 1005 "J.R. Hacker"
@@ -87,3 +89,27 @@ customer3 = Customer {
                                  "USA"],
               customerName = "Jane Q. Citizen"
             }
+
+-- Parameterized Types
+-- Type Variables are used to introduce polymorphism to our types
+data Maybe a = Just a
+             | Nothing
+             deriving (Show)
+-- a is a type variable - indicates the Maybe type takes another type as a parameter
+-- Maybe can be used on any type as a result (it is generic/polymorphic)
+
+-- Recursive Types - classic example is list type (defined in terms of itself)
+-- Make our own custom list swapping : for Cons and [] for Nil
+data List a = Cons a (List a)
+            | Nil
+              deriving (Show)
+
+-- Code Output:
+-- *Main> Cons 0 Nil
+-- Cons 0 Nil
+-- *Main> Cons 1 it
+-- Cons 1 (Cons 0 Nil)
+-- *Main> Cons 2 it
+-- Cons 2 (Cons 1 (Cons 0 Nil))
+-- *Main> Cons 3 it
+-- Cons 3 (Cons 2 (Cons 1 (Cons 0 Nil)))
