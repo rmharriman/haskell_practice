@@ -113,3 +113,11 @@ data List a = Cons a (List a)
 -- Cons 2 (Cons 1 (Cons 0 Nil))
 -- *Main> Cons 3 it
 -- Cons 3 (Cons 2 (Cons 1 (Cons 0 Nil)))
+
+-- An introduction to local variables
+-- Within the body of a function we can introduce local variables using the let keyword
+lend amount balance = let reserve    = 100
+                          newBalance = balance - amount
+                      in if balance < reserve
+                         then Main.Nothing
+                         else Main.Just newBalance
