@@ -3,6 +3,11 @@
 import Data.Char (ord)
 import Data.Bits (shiftL, (.&.), (.|.))
 
+mySum xs = helper 0 xs
+    where helper acc (x:xs) = helper (acc + x) xs
+          helper acc _      = acc
+
+
 -- new concepts:
 -- shiftL implements a logical shift left
 -- .&. provides a bitwise and
@@ -45,12 +50,46 @@ adler32_try2 xs = helper (1,0) xs
 -- type sig: func foldl takes 3 args, a function (a step), initial value of type a, and a list and returns a type a
 -- function arg takes two args, one of type a and one of type b and returns a type a
 foldl :: (a -> b -> a) -> a -> [b] -> a
-
-foldl step zero (x:xs) = foldl step (step zero x) xs
+foldl step zero (x:xs) = Main.foldl step (step zero x) xs
 foldl _    zero []     = zero
 
-
 -- the earlier mySum function can be rewritten to use foldl
-foldlSum xs = foldl step 0 xs
+foldlSum xs = Main.foldl step 0 xs
     where step acc x = acc + x
 
+-- And again as the step function is just addition in this case
+niceSum :: [Integer] -> Integer
+niceSum xs = Main.foldl (+) 0 xs
+
+-- the Adler32 function can be rewritten to see why using a pair was important
+-- bc the step function takes a pair, it will return one as well.
+adler32_foldl xs = let (a,b) = Main.foldl step (1,0) xs
+                   in (b `shiftL` 16) .|. a
+   where step (a, b) x = let a' = a + (ord x .&. 0xff)
+                         in (a' `mod` base, (a' + b) `mod` base)
+
+-- folding can start from the right as well.
+foldr :: (a -> b -> b) -> b -> [a] -> b
+foldr step zero (x:xs) = step x (Main.foldr step zero xs)
+foldr _    zero []     = zero
+
+
+-- great illustration of foldr.
+-- replace the empty list with the zero value (in this case, actually 0)
+-- then replace the list contructor with an application of the step function
+-- 1 : (2 : (3 : []))
+-- 1 + (2 + (3 + 0 ))
+
+-- foldr seems less useful but filter can be rewritten to use it
+-- foldr step [] xs is not calling step! this is the initial call to foldr only
+myFilter p xs = foldr step [] xs
+    where step x ys | p x       = x : ys
+                    | otherwise = ys
+
+-- myFilter takes a function and a list as args
+-- then runs a locally defined function "step" for each element in the list starting with the right end
+-- the local step function in turn calls the func supplied to myFilter on each element
+-- if the call evaluates to true, the element is added to the accumulator (in this case an empty list)
+
+-- foldr's class of functions is called primitive recursion (map is also implemented using foldr)
+-- many list manipulation functions are in the primitive recursion class
