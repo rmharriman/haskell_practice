@@ -82,7 +82,7 @@ foldr _    zero []     = zero
 
 -- foldr seems less useful but filter can be rewritten to use it
 -- foldr step [] xs is not calling step! this is the initial call to foldr only
-myFilter p xs = foldr step [] xs
+myFilter p xs = Main.foldr step [] xs
     where step x ys | p x       = x : ys
                     | otherwise = ys
 
@@ -93,3 +93,37 @@ myFilter p xs = foldr step [] xs
 
 -- foldr's class of functions is called primitive recursion (map is also implemented using foldr)
 -- many list manipulation functions are in the primitive recursion class
+-- map written in temrs of foldr:
+myMap :: (a -> b) -> [a] -> [b]
+myMap f xs = Main.foldr step [] xs
+    where step x ys = f x : ys
+
+-- foldr transforms a list.
+-- first arg tell it what to do with each head/tail element of the list
+-- second arg tells it what to substitute for the end of the list (what we've called the accumulator)
+-- Append function  highlights this. step function is the list contructor and the accumulator is the list to append
+myAppend :: [a] -> [a] -> [a]
+myAppend xs ys = Main.foldr (:) ys xs
+
+-- suffice to say, foldr is a very important tool in Haskell
+
+-- Extreme challenge of the day: Understand foldl implemented using foldr
+-- myFoldl defines a function that takes 3 args
+-- arg 1 is a function that takes 2 args, arg 2 is of type a, arg 3 is a list of type b
+-- myFoldl returns a single value of type a (same as arg 2)
+myFoldl :: (a -> b -> a) -> a -> [b] -> a
+
+-- myFoldl calls foldr with the local step function and 3 more args
+-- seems like too many args to the foldr function?
+myFoldl f z xs = Main.foldr step id xs z
+    where step x g a = g (f a x)
+
+-- pitfalls of foldl
+-- final evaluation will not be computed until it's requested (Haskell's lazy evaluation)
+-- before it is evaluated, it will be stored as a thunk, which is more expensive than a single number
+-- the more complex the thunked expression, the more space it needs
+-- large foldl computations run the risk of space leaks (expanding to use more memory than it should)
+-- GHC places a cap on thunk space so an error is thrown before all memory can be consumed
+
+
+
