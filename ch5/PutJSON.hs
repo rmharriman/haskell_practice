@@ -3,6 +3,8 @@ module PutJSON where
 import Data.List (intercalate)
 import SimpleJSON
 
+-- renders JValues as strings
+
 renderJValue :: JValue -> String
 
 renderJValue (JString s)   = show s
