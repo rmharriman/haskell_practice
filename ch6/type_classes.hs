@@ -81,9 +81,10 @@ instance BasicEq3 Color where
     isEqual3 Blue Blue = True
     isEqual3 _ _ = False
 
--- Haskell comes with many built-in typeclasses
+-- Haskell comes with many built-in typeclasses:
 
 -- Show - converts values to strings - defined for many types
+
 -- custom types can be made to be instances of the typeclass to make it easy to display or print them
 -- Show typeclass defines the show function: show :: (Show a) => a -> String
 -- make our color data type a member of the show typeclass
@@ -96,6 +97,7 @@ instance Show Color where
 -- Show is usually used to define a String representation for data that is useful for a machine to parse back with Read.
 
 -- Read - essentially the opposite of Show
+
 -- defines functions that will take a String, parse it, and return data in any type that is a member of Read
 -- read is the most useful function of the Read typeclass: read :: (Read a) => String -> a
 -- read typically takes an explicit type to parse the input
@@ -117,7 +119,65 @@ instance Show Color where
 -- ghci> (read "5")::Double
 -- 5.0
 -- ghci> (read "5.0")::Integer
+-- *** Exception: Prelude.read: no parse -- interpreter selected the wrong parser
+
+-- for your own types, a simple parser will work
+-- implement readsPrec to add a parser to custom types
+instance Read Color where
+    -- readsPrec is the main function for parsing input
+    readsPrec _ value =
+        -- We pass tryParse a list of pairs.  Each pair has a string
+        -- and the desired return value.  tryParse will try to match
+        -- the input to one of these strings.
+        tryParse [("Red", Red), ("Green", Green), ("Blue", Blue)]
+        where tryParse [] = []    -- If there is nothing left to try, fail
+              tryParse ((attempt, result):xs) =
+                      -- Compare the start of the string to be parsed to the
+                      -- text we are looking for.
+                      if (take (length attempt) value) == attempt
+                         -- If we have a match, return the result and the
+                         -- remaining input
+                         then [(result, drop (length attempt) value)]
+                         -- If we don't have a match, try the next pair
+                         -- in the list of attempts.
+                         else tryParse xs
+
+-- Now these work:
+-- *Main> (read "Red")::Color
+-- Red
+-- *Main> (read "[Red,Blue]")::[Color]
+-- [Red,Blue]
+-- *Main> (read "[Red, Red, Blue]")::[Color]
 -- *** Exception: Prelude.read: no parse
+
+-- last one causes an error because the parser cannot handle leading spaces, trailing spaces however are handled
+-- Read is not a widely used typeclass but wanted to hightlight here Parsec will be covered later and is used a lot
+
+-- Serialization with Read and Show - often used to store a data structure in memory to disk
+-- process of converting data in memory to a flat series of bits for storage is called serialization
+-- Output of show is typically valid Haskell and works well for serialization
+
+-- *Main> input <- readFile "test"
+-- *Main> let d2 = read input
+-- *Main> show d2
+-- "*** Exception: Prelude.read: no parse
+-- Need to give the parser an explicity type and it can then read input correctly
+-- *Main> let d2 = (read input)::[Maybe Int]
+-- *Main> print d2
+-- [Just 5,Nothing,Nothing,Just 8,Just 9]
+-- *Main> print d1
+-- [Just 5,Nothing,Nothing,Just 8,Just 9]
+-- *Main> d1 == d2
+-- True
+
+-- Numeric Types
+
+
+
+
+
+
+
 
 
 
